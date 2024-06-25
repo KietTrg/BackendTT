@@ -7,7 +7,8 @@ import Author from '../models/author'
 export const register = async (req: Request, res: Response) => {
     const { password, fullName, email, gender, dateOfBirth } = req.body
     const validGenders = ['male', 'female'];
-    if (!validGenders.includes(gender)) {
+
+    if (gender && !validGenders.includes(gender)) {
         return res.status(400).json({ message: 'Invalid gender value' });
     }
     try {
@@ -66,5 +67,18 @@ export const login = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('error: ', error);
         res.status(500).json({ message: 'Something went wrong' })
+    }
+}
+export const myAuth = async (req: Request, res: Response) => {
+    const authId = req.userId
+    try {
+        const user = await Author.findById(authId).select('-password')
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+        res.status(200).json({ user, message: 'success' })
+    } catch (error) {
+        console.log('error: ', error);
+
     }
 }
